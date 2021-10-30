@@ -2,14 +2,11 @@
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
 
-Try running some of the following tasks:
+## Goal of the contract
+Implement a Staking contract that will block the staked tokens for a period of time.
+The address of the ERC20 token must be set at deployment.
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+> Deliverables
+- made the following functions to accept amount == 0: stake(), unstake(), withdrawUnstaked(), withdrawReward(), calculateReward(); If amount is zero, then the smart contract should adjust the amount value to be the maximum available value. For example, if _amount is zero for stake() function, then the smart contract should use maximum available value for _amount, which is the caller's token balance.
+- Include a deployment script.
+

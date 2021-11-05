@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.5;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PausableUpgradeable.sol";
@@ -43,7 +43,7 @@ contract SimpleStaking is Initializable, OwnableUpgradeable, PausableUpgradeable
   event SetRewardRate(address indexed tokenAddr, uint256 newRewardRate);
 
   ///@notice Event emitted when owner set reward internal time
-  event SetRewardInternal(uint256 _rewardInternal);
+  ///event SetRewardInternal(uint256 _rewardInternal);
 
   ///@notice Event emitted when owner set the reward Token address
   event SetRewardTokenAddr(address _rewardTokenAddr);
@@ -79,8 +79,10 @@ contract SimpleStaking is Initializable, OwnableUpgradeable, PausableUpgradeable
     
     records[tokenAddr][msg.sender].stakedAmount += amount;
     records[tokenAddr][msg.sender].stakedAt = block.timestamp;
-    records[tokenAddr][msg.sender].rewardAmount = calculateReward(tokenAddr, msg.sender, amount);
+    records[tokenAddr][msg.sender].rewardAmount = calculateReward(tokenAddr, msg.sender, amount);//when stake, it is 0 by default.
 
+    console.log("Token address %s was staked %s by %s", tokenAddr, amount, msg.sender);
+    
     emit Stake(tokenAddr, amount, block.timestamp);
   }
 
@@ -103,6 +105,8 @@ contract SimpleStaking is Initializable, OwnableUpgradeable, PausableUpgradeable
     
     records[tokenAddr][msg.sender].unstakedAt = block.timestamp;
     records[tokenAddr][msg.sender].rewardAmount = calculateReward(tokenAddr, msg.sender, records[tokenAddr][msg.sender].stakedAmount);
+
+    console.log("Token address %s was unstaked %s by %s", tokenAddr, amount, msg.sender);
 
     emit Unstake(msg.sender, amount, tokenAddr, records[tokenAddr][msg.sender].rewardAmount, block.timestamp);
   }
@@ -128,7 +132,9 @@ contract SimpleStaking is Initializable, OwnableUpgradeable, PausableUpgradeable
         emitAmount = _amount;
         stakeToken.transfer(msg.sender, emitAmount);
     }
-    
+
+    console.log("Unstaked Tokens %s was withdrawal %s by %s", tokenAddr, emitAmount, msg.sender);
+
     emit WithdrawUnstaked(msg.sender, emitAmount, block.timestamp);
   }
 
@@ -158,12 +164,14 @@ contract SimpleStaking is Initializable, OwnableUpgradeable, PausableUpgradeable
     }
     records[tokenAddr][msg.sender].stakedAt = block.timestamp;
 
+    console.log("Reward Tokens %s was withdrawal %s by %s", tokenAddr, emitAmount, msg.sender);
+
     emit WithdrawRewards(msg.sender, emitAmount, block.timestamp);
   }
 
   /**
     * @dev public function to calculate rewards based on the duration of staked tokens, staked token amount, reward rate of the staked token, reward interval
-    * @param tokenAddr address of Staketoken
+    * @param tokenAddr address of StakeToken
     * @param user address of user
     * @param _amount amount of Staketoken
     */
@@ -193,15 +201,6 @@ contract SimpleStaking is Initializable, OwnableUpgradeable, PausableUpgradeable
     */
   function unpause() external onlyOwner whenPaused {
     _unpause();
-  }
-
-  /**
-    * @dev external function only for this contract owner to set the reward internal of a staken token
-    * @param _rewardInternal amount of Staketoken
-    */
-  function setRewardInternal(uint256 _rewardInternal) external onlyOwner whenNotPaused {
-    rewardInterval = _rewardInternal;
-    emit SetRewardInternal(_rewardInternal);
   }
 
   /**

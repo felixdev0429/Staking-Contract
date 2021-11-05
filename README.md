@@ -10,3 +10,14 @@ The address of the ERC20 token must be set at deployment.
 - made the following functions to accept amount == 0: stake(), unstake(), withdrawUnstaked(), withdrawReward(), calculateReward(); If amount is zero, then the smart contract should adjust the amount value to be the maximum available value. For example, if _amount is zero for stake() function, then the smart contract should use maximum available value for _amount, which is the caller's token balance.
 - Include a deployment script.
 
+```shell
+
+git clone {repository URL}
+npm install
+npx hardhat accounts
+npx hardhat compile
+npx hardhat test
+npx hardhat run scripts/deploy.js --network kovan
+
+```
+
